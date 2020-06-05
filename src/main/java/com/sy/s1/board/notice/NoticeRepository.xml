@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sy.s1.board.notice.NoticeRepository">
+	<!-- setInsert 실행 하고 결과VO의 num에 증가된 값을 넣어줌 -->
+	<insert id="setInsert" parameterType="NoticeVO" useGeneratedKeys="true" keyProperty="num">
+		INSERT INTO notice (title, writer,contents,regDate,hit)
+		 VALUES (#{title},#{writer},#{contents},now(),0)
+	</insert>
+	
+	<update id="setUpdate" parameterType="NoticeVO">
+		update notice set title=#{title}, contents=#{contents} where num=#{num}
+	</update>
+	
+	<delete id="setDelete" parameterType="NoticeVO">
+		delete from notice where num=#{num}
+	</delete>
+	
+	<select id="getSelectOne" parameterType="NoticeVO" resultType="NoticeVO">
+		select * from notice where num=#{num}
+	</select>
+	
+	<select id="getSelectList" parameterType="Pager" resultType="NoticeVO">
+		
+		select * from notice 
+		<where>
+			<if test="kind == 'bt'">
+				title like concat('%',#{search},'%')
+			</if>
+			<if test="kind == 'bc'">
+				contents like concat('%',#{search},'%')
+			</if>
+			<if test="kind == 'bw'">
+				writer like concat('%',#{search},'%')
+			</if>
+		</where>
+		order by num desc limit #{startRow}, #{perPage}
+	</select>
+	
+	<select id="getTotalCount" parameterType="Pager" resultType="java.lang.Long">
+		select count(num) from notice
+		<where>
+			<if test="kind == 'bt'">
+				title like concat('%',#{search},'%')
+			</if>
+			<if test="kind == 'bc'">
+				contents like concat('%',#{search},'%')
+			</if>
+			<if test="kind == 'bw'">
+				writer like concat('%',#{search},'%')
+			</if>
+		</where>
+	</select>
+	
+	<update id="hitUpdate" parameterType="Long">
+		update notice set hit=hit+1 where num=#{num}
+	</update>
+	
+	
+
+</mapper>

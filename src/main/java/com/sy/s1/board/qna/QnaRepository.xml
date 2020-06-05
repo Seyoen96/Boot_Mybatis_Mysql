@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="com.sy.s1.board.qna.QnaRepository">
+  
+  	<insert id="setInsert" parameterType="QnaVO" useGeneratedKeys="true" keyProperty="num">
+  	 INSERT INTO qna (title, writer,contents,regDate,hit,ref,step,depth) 
+  	 VALUES (#{title},#{writer},#{contents},now(),0,#{num},0,0)
+  	</insert>
+  
+  	<update id="setUpdateRef" parameterType="QnaVO">
+  	update qna set ref = #{num} where num=#{num}
+  	</update>
+  	
+  	<insert id="replyInsert" parameterType="QnaVO" useGeneratedKeys="true" keyProperty="num">
+  	insert into qna (title, writer,contents,regDate,hit,ref,step,depth) 
+  		values (#{title},#{writer},#{contents},now(),0,
+  					(select r from (select ref as r from qna where num=#{num}) Q),
+  					(select r from (select step as r from qna where num=#{num}) Q)+1,
+  					(select r from (select depth as r from qna where num=#{num}) Q)+1
+  					)
+  	</insert>
+  	
+  	<update id="setUpdateReply" parameterType="QnaVO">
+		update qna set step = step+1
+		where ref=(select r from(select ref as r from qna where num=#{num}) Q) and
+		step>(select s from(select step s from qna where num=#{num}) Q)  	
+  	</update>
+  	
+  	
+  	<select id="getTotalCount" parameterType="Pager" resultType="java.lang.Long">
+  		select count(num) from qna
+		<where>
+			<if test="kind == 'bt'">
+				title like concat('%',#{search},'%')
+			</if>
+			<if test="kind == 'bc'">
+				contents like concat('%',#{search},'%')
+			</if>
+			<if test="kind == 'bw'">
+				writer like concat('%',#{search},'%')
+			</if>
+		</where> 	
+  	</select>
+  	
+  	<select id="getSelectList" parameterType="Pager" resultType="QnaVO">
+		
+		select * from qna 
+		<where>
+			<if test="kind == 'bt'">
+				title like concat('%',#{search},'%')
+			</if>
+			<if test="kind == 'bc'">
+				contents like concat('%',#{search},'%')
+			</if>
+			<if test="kind == 'bw'">
+				writer like concat('%',#{search},'%')
+			</if>
+		</where>
+		order by ref desc,step asc limit #{startRow}, #{perPage}
+	</select>
+	
+	<select id="getSelectOne" parameterType="QnaVO" resultType="QnaVO">
+		select * from qna where num=#{num}
+	</select>
+	
+	<delete id="setDelete" parameterType="QnaVO">
+		delete from qna where num=#{num}
+	</delete>
+	
+	<update id="setUpdate" parameterType="QnaVO">
+		update qna set title=#{title}, contents=#{contents} where num=#{num}
+	</update>
+	
+	<update id="hitUpdate" parameterType="Long">
+		update qna set hit=hit+1 where num=#{num}
+	</update>
+  
+  </mapper>
