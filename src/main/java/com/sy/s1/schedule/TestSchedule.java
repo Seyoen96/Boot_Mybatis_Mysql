@@ -14,7 +14,7 @@ public class TestSchedule {
 //	@Scheduled(fixedDelay = 1000)
 //	@Scheduled(fixedRate = 1000)
 	
-	@Scheduled(fixedDelay = 1000)
+//	@Scheduled(fixedDelay = 1000)
 	public void delay() throws Exception{
 		System.out.println("fixDelay");
 		System.out.println(Thread.currentThread().getName());
@@ -24,7 +24,7 @@ public class TestSchedule {
 		Thread.sleep(d);
 	}
 	
-	@Scheduled(fixedRate = 1000)
+//	@Scheduled(fixedRate = 1000)
 	public void rate() throws Exception{
 		System.out.println("fixRate");
 		System.out.println(Thread.currentThread().getName());
