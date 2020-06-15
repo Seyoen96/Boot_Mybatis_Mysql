@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import com.sy.s1.util.Pager;
 
 @Controller
-public class TestController {	
+public class TestRestController {	
 	// REST 방식으로 받아오기
 	// path variable이 우선 (parameter X)
 	
